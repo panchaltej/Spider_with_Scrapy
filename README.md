@@ -8,7 +8,7 @@ Spider for the following site: ​ https://www.federalreserve.gov/start-job-sear
 3. Job category
 
 ```
-$ scrapy crawl fed_reserve_jobs -a keywords=”python” -a category=”Security”
+$ scrapy crawl fed_reserve_jobs -a keywords="python" -a category="Security"
 ```
 
 **Output** : Prints resulting jobs with job ID and job location
@@ -41,5 +41,5 @@ $ scrapy crawl fed_reserve_jobs -a keywords=”python” -a category=”Security
 5. Clone or download the github repository - <https://github.com/panchaltej/Spider_with_Scrapy>
 6. Run using below command from the cloned directory where scrapy.cfg file is present:
 ```
-    $ scrapy crawl fed_reserve_jobs -a keywords=”python” -a category=”Security”
+    $ scrapy crawl fed_reserve_jobs -a keywords="python" -a category="Security"
 ```
