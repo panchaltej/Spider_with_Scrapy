@@ -2,7 +2,6 @@
 import scrapy
 import scrapy_splash
 import json
-import sys
 
 class JobsearchSpider(scrapy.Spider):
     name = 'fed_reserve_jobs'
@@ -16,15 +15,16 @@ class JobsearchSpider(scrapy.Spider):
         
 
     def parse(self, response):
+        #Sending request to the iframe
         yield(scrapy_splash.SplashRequest("https://frbog.taleo.net/careersection/1/moresearch.ftl?lang=en&portal=101430233", callback = self.parse_iframe))
     
     def parse_iframe(self, response):
         keywords = self.keywords
         category = self.category
+        #script to be run with search criteria
         script = """
                 function main(splash)
                     local url = splash.args.url
-                    -- local keyword = process.argv[2]
                     assert(splash:go(url))
 
                     assert(splash:runjs('document.getElementById("advancedSearchInterface.keywordInput").value = "%s"'))
@@ -55,15 +55,19 @@ class JobsearchSpider(scrapy.Spider):
 
     def parse_result(self, response):
         json_data = json.loads(response.body_as_unicode())
+        #extracting html from the json response
         data_html = scrapy.Selector(text=json_data["html"], type="html")
         JOBPOSTS = data_html.xpath('//div[@class="iconcontentpanel"]')
         matched_jobs = {}
+
         for jobpost in JOBPOSTS:
-            JOBTITLE_SELECTOR = 'div div div div h3 span a ::text'
-            JOBLOC_SELECTOR = '.morelocation span ::text'
-            JOBID_SELECTOR = '.text ::text'
+            JOBTITLE_SELECTOR = 'div div div div h3 span a ::text' # selects div containing job
+            JOBLOC_SELECTOR = '.morelocation span ::text' # selects span containing job location
+            JOBID_SELECTOR = '.text ::text' # selects element containing jobid 
             job = jobpost.css(JOBTITLE_SELECTOR).extract_first() + " - " + jobpost.css(JOBID_SELECTOR).extract_first()
             matched_jobs[job] = jobpost.css(JOBLOC_SELECTOR).extract_first()
+
+        #print result
         print()            
         print("====================Search Result-Jobs====================")
         print()  
