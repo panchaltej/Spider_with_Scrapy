@@ -6,8 +6,6 @@ import sys
 
 class JobsearchSpider(scrapy.Spider):
     name = 'fed_reserve_jobs'
-    # allowed_domains = ['www.federalreserve.gov','frbog.taleo.net']
-    # start_urls = ['http://www.federalreserve.gov/start-job-search.htm']
     
     def __init__(self, keywords=None, category=None, *args, **kwargs):
         super(JobsearchSpider, self).__init__(*args, **kwargs)
@@ -58,15 +56,19 @@ class JobsearchSpider(scrapy.Spider):
     def parse_result(self, response):
         json_data = json.loads(response.body_as_unicode())
         data_html = scrapy.Selector(text=json_data["html"], type="html")
-        JOBPOSTS = data_html.xpath('//span[@class="titlelink"]')
-        matched_jobs = []
+        JOBPOSTS = data_html.xpath('//div[@class="iconcontentpanel"]')
+        matched_jobs = {}
         for jobpost in JOBPOSTS:
-            JOBTITLE_SELECTOR = 'span a ::text'
-            matched_jobs.append(jobpost.css(JOBTITLE_SELECTOR).extract_first())
+            JOBTITLE_SELECTOR = 'div div div div h3 span a ::text'
+            JOBLOC_SELECTOR = '.morelocation span ::text'
+            JOBID_SELECTOR = '.text ::text'
+            job = jobpost.css(JOBTITLE_SELECTOR).extract_first() + " - " + jobpost.css(JOBID_SELECTOR).extract_first()
+            matched_jobs[job] = jobpost.css(JOBLOC_SELECTOR).extract_first()
         print()            
         print("====================Search Result-Jobs====================")
-        for job in matched_jobs:
-            print(job)
+        print()  
+        for job, location in matched_jobs.items():
+            print(job, " - ", location)
         print("==========================================================")
         print()
             

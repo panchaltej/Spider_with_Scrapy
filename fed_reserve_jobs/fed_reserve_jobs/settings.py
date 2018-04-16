@@ -14,6 +14,7 @@ BOT_NAME = 'fed_reserve_jobs'
 SPIDER_MODULES = ['fed_reserve_jobs.spiders']
 NEWSPIDER_MODULE = 'fed_reserve_jobs.spiders'
 
+LOG_LEVEL = 'ERROR'
 # Configuration for scrapy-splash
 SPLASH_URL = 'http://localhost:8050'
 
